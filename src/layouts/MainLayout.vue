@@ -3,7 +3,7 @@
     <q-header elevated>
       <q-toolbar>
         <q-toolbar-title class="text-center">
-          Unipass Demo
+          Layer 1 -> EVM bridge
         </q-toolbar-title>
       </q-toolbar>
     </q-header>

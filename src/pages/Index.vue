@@ -66,29 +66,6 @@
       <q-separator spaced />
       <!-- transfer -->
       <q-card-section class="q-gutter-sm">
-        <div class="row">
-          <q-input
-            class="full-width"
-            v-model="toAddress"
-            type="text"
-            label="TO:"
-          />
-        </div>
-        <div class="row">
-          <q-input
-            class="full-width"
-            v-model="toAmount"
-            type="number"
-            suffix=" CKB"
-          />
-        </div>
-        <q-btn
-          class="full-width"
-          color="info"
-          icon="send"
-          label="Send"
-          @click="send"
-        />
         <div class="row" style="word-break: break-all;">
           <b>TX:</b>
           <a
@@ -161,48 +138,9 @@
 
       <q-card-section class="q-gutter-sm"> </q-card-section>
       <q-separator spaced />
-
-      <!-- sign -->
-      <q-card-section class="q-gutter-sm">
-        <div class="row">
-          <q-input
-            class="full-width"
-            v-model="message"
-            type="text"
-            label="Message"
-          />
-        </div>
-        <q-btn
-          class="full-width"
-          color="info"
-          icon="check"
-          label="Sign"
-          @click="sign"
-        />
-        <div class="row" style="word-break: break-all;">
-          <b>pubkey:</b> {{ pubkey }}
-          <br />
-          <b>SIGNATURE:</b> {{ signature }}
-        </div>
-      </q-card-section>
-
-      <q-card-section>
-        <q-btn
-          class="full-width"
-          color="primary"
-          type="submit"
-          icon="login"
-          no-caps
-          label="Re-sign Recovery Data"
-          @click="recovery"
-        />
-        <div class="row q-my-sm">
-          {{ success }}
-        </div>
-      </q-card-section>
     </q-card>
     <q-footer class="text-center" @click="goto('https://lay2.tech')">
-      <span class="text-caption"> Lay2 Tech, 2021</span>
+      <span class="text-caption">Unipass v2</span>
     </q-footer>
   </q-page>
 </template>
@@ -543,9 +481,12 @@ export default defineComponent({
         }
       };
 
+      const TEST_RECEIVING_EVM_ADDRESS = '0xD173313A51f8fc37BcF67569b463abd89d81844f';
+
       const data = await getNFTTransferSignMessage(
         this.toAddress,
-        [unipassExpectedNft]
+        [unipassExpectedNft],
+        TEST_RECEIVING_EVM_ADDRESS
       );
       if (!data) return;
       const localData = getData();

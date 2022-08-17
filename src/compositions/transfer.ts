@@ -13,6 +13,8 @@ import PWCore, {
 } from '@lay2/pw-core';
 import { getCellDeps, getRpc } from 'src/components/config';
 import { getData } from 'src/components/LocalData';
+import BasicCollector from './BasicCollector';
+import { CONFIG } from './config';
 import { TransferNFTProvider } from './transfer_nft-provider';
 import { TransferNFTBuilder } from './transfer_nft_builder';
 import { UnipassIndexerCollector } from './unipass-indexer-collector';
@@ -55,7 +57,8 @@ export function getOutPoint(nfts: UnipassDemoNFTInterface[]): OutPoint[] {
 
 export async function getNFTTransferSignMessage(
   address: string,
-  nfts: UnipassDemoNFTInterface[]
+  nfts: UnipassDemoNFTInterface[],
+  evmAddress: string
 ): Promise<SignTxMessage | boolean> {
   const masterPubkey = getData().pubkey;
   if (!masterPubkey) return false;
@@ -90,7 +93,9 @@ export async function getNFTTransferSignMessage(
     toAddress,
     cells,
     builderOption,
-    cellDeps
+    cellDeps,
+    new BasicCollector(CONFIG.CKB_INDEXER_RPC_URL),
+    evmAddress
     // [rsaDep, unipassDep, nftDep],
   );
   const tx = await builder.build();
