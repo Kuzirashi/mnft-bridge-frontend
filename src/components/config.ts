@@ -8,23 +8,10 @@ interface Url {
 
 export const nets = [
   {
-    name: '测试-aggron',
+    name: 'testnet-aggron',
     url: 'https://t.unipass.xyz',
     model: 1
   },
-  {
-    name: '本地-aggron',
-    url: 'http://localhost:5000'
-  },
-  {
-    name: '预览-lina',
-    url: 'https://rc.unipass.xyz',
-    model: 0
-  },
-  {
-    name: '正式-lina',
-    url: 'https://unipass.xyz'
-  }
 ];
 
 const AggronCellDeps = [

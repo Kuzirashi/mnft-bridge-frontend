@@ -12,12 +12,15 @@
     "test": "echo \"No test specified\" && exit 0"
   },
   "dependencies": {
+    "@ckb-lumos/codec": "0.17.0",
+    "@ckb-lumos/lumos": "0.17.0",
     "@lay2/pw-core": "^0.4.0-alpha.8",
     "@quasar/extras": "^1.0.0",
     "@vue/composition-api": "^1.0.0-rc.3",
     "axios": "^0.21.1",
     "core-js": "^3.6.5",
     "element-ui": "^2.15.3",
+    "node-fetch": "2.6.7",
     "quasar": "^1.0.0",
     "urlencode": "^1.1.0"
   },
@@ -25,6 +28,7 @@
     "@quasar/app": "^2.0.0",
     "@types/elliptic": "^6.4.12",
     "@types/node": "^10.17.15",
+    "@types/node-fetch": "^2.6.2",
     "@types/urlencode": "^1.1.2",
     "@typescript-eslint/eslint-plugin": "^4.16.1",
     "@typescript-eslint/parser": "^4.16.1",

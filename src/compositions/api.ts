@@ -1,19 +1,49 @@
-import axios from 'axios';
-import { LocalStorage } from 'quasar';
+import { OutPoint, Output } from '@ckb-lumos/lumos';
+import { Address } from '@lay2/pw-core';
+import { CONFIG } from './config';
+import { NFT } from './nft';
 
-export async function getNFTData(
-  address: string,
-  page: number,
-  limit: number
-): Promise<any> {
-  const isLina = LocalStorage.getItem('lina');
-  let url = `https://devapi.gift.unipass.me/ckb?address=${address}&page=${page}&limit=${limit}`;
-  console.log(url);
-  if (isLina) {
-    url = `https://api.gift.unipass.me/ckb?address=${address}&page=${page}&limit=${limit}`;
-  }
-  const ret = await axios.get(url);
+export type CkbIndexerCell = {
+  block_number: string;
+  out_point: OutPoint;
+  output: Output;
+  output_data: string;
+  tx_index: string;
+}
 
-  // eslint-disable-next-line @typescript-eslint/no-unsafe-return
-  return ret.data;
+export async function getNFTsAtAddress(address: Address) {
+  console.log(`Searching for mNFTs at address: ${address.toCKBAddress()}`);
+  const addressLockScript = address.toLockScript().serializeJson();
+  const response = await fetch(CONFIG.CKB_INDEXER_RPC_URL, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({
+      id: 2,
+      jsonrpc: '2.0',
+      method: 'get_cells',
+      params: [
+        {
+          script: addressLockScript,
+          script_type: 'lock',
+        },
+        'asc',
+        '0x64',
+      ],
+    }),
+  });
+  const result = await response.json();
+
+  return (result.result.objects as CkbIndexerCell[])
+    .filter(o => o.output.type?.code_hash === CONFIG.MNFT_TYPE_CODE_HASH)
+    .map(
+      o => {
+        if (!o.output.type) {
+          throw new Error('NFT has missing Type Script arguments.');
+        } 
+
+        console.log(o)
+
+        return new NFT(o.out_point, o.output_data, o.output.type?.args);
+      }
+    );
 }

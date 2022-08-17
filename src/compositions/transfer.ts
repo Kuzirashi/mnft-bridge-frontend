@@ -22,7 +22,7 @@ const collector = new UnipassIndexerCollector(
   process.env.CKB_INDEXER_URL as string
 );
 
-export interface NFT {
+export interface UnipassDemoNFTInterface {
   classTypeArgs: string;
   nftTypeArgs: string;
   tokenId: string;
@@ -43,7 +43,7 @@ export interface SignTxMessage {
   data: string;
   messages: string;
 }
-export function getOutPoint(nfts: NFT[]): OutPoint[] {
+export function getOutPoint(nfts: UnipassDemoNFTInterface[]): OutPoint[] {
   const outpoints: OutPoint[] = [];
   for (const item of nfts) {
     // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
@@ -55,7 +55,7 @@ export function getOutPoint(nfts: NFT[]): OutPoint[] {
 
 export async function getNFTTransferSignMessage(
   address: string,
-  nfts: NFT[]
+  nfts: UnipassDemoNFTInterface[]
 ): Promise<SignTxMessage | boolean> {
   const masterPubkey = getData().pubkey;
   if (!masterPubkey) return false;

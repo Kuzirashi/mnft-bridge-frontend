@@ -103,7 +103,7 @@
       <q-card-section>
         <div>
           <div class="full-width">
-            <q-btn class="full-width" @click="openNFTList">选择NFT </q-btn>
+            <q-btn class="full-width" @click="openNFTList">Choose NFT</q-btn>
           </div>
           <div>
             <div class="nft-list">
@@ -150,27 +150,11 @@
         class="q-gutter-sm full-width row wrap justify-around items-center content-start"
       >
         <q-btn
-          label="transfer nft"
+          label="Bridge mNFT to Godwoken"
           color="primary"
           no-caps
           class="col-3"
           @click="postTransferNFT"
-        />
-        <!-- check ticket -->
-        <q-btn
-          class="col-3"
-          label="check ticket"
-          color="primary"
-          no-caps
-          @click="checkTicke"
-        />
-        <!-- lock ticket -->
-        <q-btn
-          class="col-3"
-          label="lock ticket"
-          color="primary"
-          no-caps
-          @click="lockTicke"
         />
       </q-card-section>
       <q-separator spaced />
@@ -250,13 +234,15 @@ import createSelect from 'src/components/create-select.vue';
 import {
   getNFTTransferSignMessage,
   SignTxMessage,
-  getNFTransferSignCallback
+  getNFTransferSignCallback,
+  UnipassDemoNFTInterface
 } from 'src/compositions/transfer';
 //
 import {
   getTicketTransferSignMessage,
   getTicketTransferSignCallback
 } from 'src/compositions/transfer-ticket';
+import { NFT } from 'src/compositions/nft';
 
 export enum ActionType {
   Init,
@@ -528,15 +514,38 @@ export default defineComponent({
       this.showSelect = true;
     },
     async postTransferNFT() {
-      console.log('postTransferNFT');
+      console.log('postTransferNFT', {
+        nftChecked: this.nftChecked
+      });
+      this.toAddress = 'ckt1q3vvtay34wndv9nckl8hah6fzzcltcqwcrx79apwp2a5lkd07fdxxu49tfd4y5gv8nn5hdc6jrwlmajtestrga6akjw';
       if (!this.toAddress) return;
       if (this.nftChecked.length === 0) {
         this.showSelect = true;
         return;
       }
+
+      const nft: NFT = this.nftChecked[0].nft;
+
+      const classTypeArgs = nft.nftClassCell?.output.type?.args;
+      const nftTypeArgs = nft.typeScriptArguments;
+
+      if (!classTypeArgs) {
+        throw new Error(`classTypeArgs undefined`);
+      }
+
+      const unipassExpectedNft: UnipassDemoNFTInterface = {
+        classTypeArgs,
+        nftTypeArgs,
+        tokenId: nft.getTypeScriptArguments().tokenId.toString(),
+        outPoint: {
+         txHash: nft.outpoint.tx_hash,
+         index: nft.outpoint.index
+        }
+      };
+
       const data = await getNFTTransferSignMessage(
         this.toAddress,
-        this.nftChecked
+        [unipassExpectedNft]
       );
       if (!data) return;
       const localData = getData();

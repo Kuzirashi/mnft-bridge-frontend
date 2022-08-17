@@ -7,7 +7,7 @@
     :modal="false"
   >
     <div id="create-select">
-      <div class="page-title">选 NFT</div>
+      <div class="page-title">Choose NFT</div>
       <main>
         <div v-if="nftList.length === 0" v-loading="loading" class="not-found">
           <img src="/img/not_found.svg" />
@@ -15,7 +15,7 @@
         </div>
         <div v-else class="nft-list">
           <template v-for="(e, i) in nftListFilter">
-            <div :key="i" class="nft">
+            <div :key="i" class="nft" @click="nftSelected(i)">
               <div class="nft-info">
                 <el-image
                   class="nft-image"
@@ -51,16 +51,17 @@
       </main>
       <transition name="el-zoom-in-bottom">
         <div class="check-box" :class="{ checked: showCheckBox }">
-          <div class="has">总计 {{ nftChecked.length }} 个</div>
-          <div class="ok" @click="bindRight">选好了</div>
+          <div class="has">Selected NFT amount: {{ nftChecked.length }}</div>
+          <div class="ok" @click="bindRight">Proceed with selected NFT</div>
         </div>
       </transition>
     </div>
   </el-dialog>
 </template>
 <script>
-import { getNFTData } from 'src/compositions/api';
+import { getNFTsAtAddress } from 'src/compositions/api';
 import { getData } from 'src/components/LocalData';
+import { Address, AddressType } from '@lay2/pw-core';
 export default {
   props: {
     show: {
@@ -123,7 +124,7 @@ export default {
       this.$emit('select', this.nftList, this.nftChecked);
     },
     bindCheckBoxClose() {
-      this.$confirm('退出后将清空当前的选择记录', '确定退出？', {
+      this.$confirm('Exiting will clear the current selection', '确定退出？', {
         confirmButtonText: '确定',
         cancelButtonText: '取消'
       })
@@ -142,27 +143,53 @@ export default {
       // first page
       const data = getData();
       if (!data.address) return;
-      this.loading = true;
-      const res = await getNFTData(data.address, 0, 100);
-      this.loading = false;
-      if (Array.isArray(res)) {
-        this.nftList = this.initList(res);
-      }
+
+      this.nftList = await this.initList(data.address);
     },
-    initList(res) {
+    async initList(addressString) {
+      this.loading = true;
+
+      const address = new Address(addressString, AddressType.ckb);
+      const res = await getNFTsAtAddress(address);
+      console.log('initlist');
       const tokenList = res;
       const arr = [];
       for (const token of tokenList) {
-        const children = token;
+        await token.getConnectedClass();
+        await token.getConnectedIssuer();
+
+        const classData = token.getClassData();
+        const issuerData = token.getIssuerData();
+
         arr.push({
-          ...token[0],
-          children,
+          tokenId: token.id,
+          name: `${classData.name} #${token.getTypeScriptArguments().tokenId}`,
+          renderer: classData.renderer,
+          issuerName: issuerData.info.name,
+          children: [],
           isIndeterminate: false,
           checkAll: false,
-          checked: []
+          checked: [],
+          nft: token
         });
       }
+
+      this.loading = false;
       return arr;
+    },
+    nftSelected(index) {
+      const nft = this.nftList[index];
+
+      console.log('nftSelected', {
+        index, nft
+      });
+      this.nftItem = nft;
+      this.showAsset = true;
+      this.nftList[index].checked = true;
+
+      this.nftChecked = [nft];
+      this.showDialog = false;
+      this.$emit('select', this.nftList, this.nftChecked);
     },
     bindNFT(nft) {
       this.nftItem = nft;
