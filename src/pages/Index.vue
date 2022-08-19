@@ -187,8 +187,7 @@ export enum ActionType {
   Login,
   SignMsg,
   SendTx,
-  SendTrasnferTx,
-  CheckTickeTx
+  SendTransferTx,
 }
 
 export interface PageState {
@@ -280,25 +279,11 @@ export default defineComponent({
           if (data.sig)
             await this.sendTxCallback(data.sig, pageState?.extraObj);
           break;
-        //SendTrasnferTx
-        case ActionType.SendTrasnferTx:
+        case ActionType.SendTransferTx:
           if (data.sig) {
             const url = getCkbEnv();
             const extra = pageState?.extraObj as string;
             const txhash = await getNFTransferSignCallback(
-              data.sig,
-              extra,
-              url.NODE_URL
-            );
-            this.txHash = txhash;
-          }
-
-          break;
-        case ActionType.CheckTickeTx:
-          if (data.sig) {
-            const url = getCkbEnv();
-            const extra = pageState?.extraObj as string;
-            const txhash = await getTicketTransferSignCallback(
               data.sig,
               extra,
               url.NODE_URL
@@ -468,7 +453,7 @@ export default defineComponent({
       const nftTypeArgs = nft.typeScriptArguments;
 
       if (!classTypeArgs) {
-        throw new Error(`classTypeArgs undefined`);
+        throw new Error('classTypeArgs undefined');
       }
 
       const unipassExpectedNft: UnipassDemoNFTInterface = {
@@ -500,7 +485,7 @@ export default defineComponent({
         pubkey,
         message: (data as SignTxMessage).messages
       });
-      this.saveState(ActionType.SendTrasnferTx, (data as SignTxMessage).data);
+      this.saveState(ActionType.SendTransferTx, (data as SignTxMessage).data);
       console.log(_url);
       window.location.href = _url;
     },
@@ -563,60 +548,6 @@ export default defineComponent({
     },
     goto(url: string) {
       window.location.href = url;
-    },
-
-    async checkTicke() {
-      console.log('checkTicke');
-      const account = getData();
-      if (!account.address) return;
-      this.address = account.address;
-      if (this.nftChecked.length === 0) {
-        this.showSelect = true;
-        return;
-      }
-      const data = await getTicketTransferSignMessage(
-        account.address,
-        this.nftChecked
-      );
-      if (!data) return;
-      const pubkey = account.pubkey;
-      const host = this.url;
-      const success_url = window.location.origin;
-      let _url = '';
-
-      _url = generateUnipassNewUrl(host, 'sign', {
-        success_url,
-        pubkey,
-        message: (data as SignTxMessage).messages
-      });
-      this.saveState(ActionType.CheckTickeTx, (data as SignTxMessage).data);
-      window.location.href = _url;
-    },
-    async lockTicke() {
-      const account = getData();
-      if (!account.address) return;
-      this.address = account.address;
-      if (this.nftChecked.length === 0) {
-        this.showSelect = true;
-        return;
-      }
-      const data = await getTicketTransferSignMessage(
-        account.address,
-        this.nftChecked,
-        '02'
-      );
-      if (!data) return;
-      const pubkey = account.pubkey;
-      const host = this.url;
-      const success_url = window.location.origin;
-      let _url = '';
-      _url = generateUnipassNewUrl(host, 'sign', {
-        success_url,
-        pubkey,
-        message: (data as SignTxMessage).messages
-      });
-      this.saveState(ActionType.CheckTickeTx, (data as SignTxMessage).data);
-      window.location.href = _url;
     },
 
     logout() {

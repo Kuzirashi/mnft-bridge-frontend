@@ -9,26 +9,26 @@ import { LocalStorage } from 'quasar';
  */
 const KEY = 'unipass';
 export interface UnipassData {
-  email: string;
-  address: string;
-  pubkey: string;
-  sig?: string;
+    email: string;
+    address: string;
+    pubkey: string;
+    sig?: string;
 }
 export function getData(): UnipassData {
-  return LocalStorage.getItem(KEY) as UnipassData;
+    return LocalStorage.getItem(KEY) as UnipassData;
 }
 
 export function saveData(data: UnipassData) {
-  LocalStorage.set(KEY, data);
+    LocalStorage.set(KEY, data);
 }
 export function saveAddress(address: string) {
-  if (!address) return;
-  const data = LocalStorage.getItem(KEY) as UnipassData;
-  data.address = address;
-  console.log(data);
-  LocalStorage.set(KEY, data);
+    if (!address) return;
+    const data = LocalStorage.getItem(KEY) as UnipassData;
+    data.address = address;
+    console.log(data);
+    LocalStorage.set(KEY, data);
 }
 
 export function Logout() {
-  LocalStorage.remove(KEY);
+    LocalStorage.remove(KEY);
 }

@@ -9,6 +9,7 @@
     "start": "quasar dev",
     "build": "quasar build",
     "lint": "eslint --ext .js,.ts,.vue ./",
+    "lint:fix": "eslint --ext .js,.ts,.vue ./ --fix",
     "test": "echo \"No test specified\" && exit 0"
   },
   "dependencies": {
@@ -30,12 +31,13 @@
     "@types/node": "^10.17.15",
     "@types/node-fetch": "^2.6.2",
     "@types/urlencode": "^1.1.2",
-    "@typescript-eslint/eslint-plugin": "^4.16.1",
+    "@typescript-eslint/eslint-plugin": "^5.33.1",
     "@typescript-eslint/parser": "^4.16.1",
     "babel-eslint": "^10.0.1",
-    "eslint": "^7.21.0",
-    "eslint-config-prettier": "^8.1.0",
-    "eslint-plugin-vue": "^7.7.0"
+    "eslint": "^8.22.0",
+    "eslint-config-prettier": "^8.5.0",
+    "eslint-plugin-vue": "^7.7.0",
+    "prettier": "^2.7.1"
   },
   "browserslist": [
     "last 10 Chrome versions",

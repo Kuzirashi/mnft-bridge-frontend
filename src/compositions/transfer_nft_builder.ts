@@ -1,82 +1,109 @@
 import {
-  Builder,
-  Address,
-  Amount,
-  Cell,
-  RawTransaction,
-  Transaction,
-  BuilderOption,
-  CellDep,
-  AmountUnit,
-  AddressPrefix
+    Builder,
+    Address,
+    Amount,
+    Cell,
+    RawTransaction,
+    Transaction,
+    BuilderOption,
+    CellDep,
+    AmountUnit,
+    AddressPrefix,
 } from '@lay2/pw-core';
 import BasicCollector from './BasicCollector';
 
 export class TransferNFTBuilder extends Builder {
-  constructor(
-    private toAddress: Address,
-    private cells: Cell[],
-    protected options: BuilderOption = {},
-    private cellDeps: CellDep[],
-    protected collector: BasicCollector,
-    private evmAddress: string
-  ) {
-    super(options.feeRate, collector, options.witnessArgs);
-  }
-
-  async build(fee = new Amount('10000', AmountUnit.shannon)): Promise<Transaction> {
-    const inputCells: Cell[] = [];
-    const outputCells: Cell[] = [];
-
-    if (this.cells.length === 0) {
-      throw new Error('no live cells, not neccessary to change lock');
+    constructor(
+        private toAddress: Address,
+        private cells: Cell[],
+        protected options: BuilderOption = {},
+        private cellDeps: CellDep[],
+        protected collector: BasicCollector,
+        private evmAddress: string
+    ) {
+        super(options.feeRate, collector, options.witnessArgs);
     }
 
-    const fromAddress = this.cells[0].lock.toAddress(AddressPrefix.ckt);
-    const toAddressLock = this.toAddress.toLockScript();
+    async build(
+        fee = new Amount('10000', AmountUnit.shannon)
+    ): Promise<Transaction> {
+        const inputCells: Cell[] = [];
+        const outputCells: Cell[] = [];
 
-    for (const cell of this.cells) {
-      inputCells.push(cell);
+        if (this.cells.length === 0) {
+            throw new Error('no live cells, not neccessary to change lock');
+        }
 
-      // mNFT Cell
-      const outputCell = cell.clone();
-      outputCell.lock = toAddressLock;
-      outputCells.push(outputCell);
+        const fromAddress = this.cells[0].lock.toAddress(AddressPrefix.ckt);
+        const toAddressLock = this.toAddress.toLockScript();
 
-      // mNFT Receiver Ethereum Address
-      const ethereumAddressCellData = `0x${cell.type?.args.slice(2)}${this.evmAddress.slice(2)}`.toLowerCase();
-      const ethereumAddressCell = new Cell(new Amount('200', AmountUnit.ckb), toAddressLock, undefined, undefined, ethereumAddressCellData);
-      outputCells.push(ethereumAddressCell);
+        for (const cell of this.cells) {
+            inputCells.push(cell);
+
+            // mNFT Cell
+            const outputCell = cell.clone();
+            outputCell.lock = toAddressLock;
+            outputCells.push(outputCell);
+
+            // mNFT Receiver Ethereum Address
+            const ethereumAddressCellData = `0x${cell.type?.args.slice(
+                2
+            )}${this.evmAddress.slice(2)}`.toLowerCase();
+            const ethereumAddressCell = new Cell(
+                new Amount('200', AmountUnit.ckb),
+                toAddressLock,
+                undefined,
+                undefined,
+                ethereumAddressCellData
+            );
+            outputCells.push(ethereumAddressCell);
+        }
+
+        // Calculate the required capacity.
+        const outputCellsCapacitySum = outputCells.reduce(
+            (a, b) => a.add(b.capacity),
+            Amount.ZERO
+        );
+        const neededAmount = outputCellsCapacitySum
+            .add(new Amount('61', AmountUnit.ckb))
+            .add(fee);
+
+        // Add necessary capacity.
+        const capacityCells = await this.collector.collectCapacity(
+            fromAddress,
+            neededAmount
+        );
+        for (const cell of capacityCells) {
+            inputCells.push(cell);
+        }
+
+        // Calculate the input capacity and change cell amounts.
+        const inputCapacity = inputCells.reduce(
+            (a, c) => a.add(c.capacity),
+            Amount.ZERO
+        );
+        const changeCapacity = inputCapacity.sub(
+            neededAmount.sub(new Amount('61', AmountUnit.ckb))
+        );
+
+        // Add the change cell.
+        const changeLockScript = fromAddress.toLockScript();
+        const changeCell = new Cell(changeCapacity, changeLockScript);
+        outputCells.push(changeCell);
+
+        const rawTx = new RawTransaction(
+            inputCells,
+            outputCells,
+            this.cellDeps
+        );
+
+        const tx = new Transaction(rawTx, [this.witnessArgs]);
+        this.fee = Builder.calcFee(tx, this.feeRate);
+
+        return tx;
     }
 
-    // Calculate the required capacity.
-    const outputCellsCapacitySum = outputCells.reduce((a, b) => a.add(b.capacity), Amount.ZERO);
-    const neededAmount = outputCellsCapacitySum.add(new Amount('61', AmountUnit.ckb)).add(fee);
-
-    // Add necessary capacity.
-		const capacityCells = await this.collector.collectCapacity(fromAddress, neededAmount);
-		for (const cell of capacityCells) {
-			inputCells.push(cell);
+    getCollector() {
+        return this.collector;
     }
-
-    // Calculate the input capacity and change cell amounts.
-		const inputCapacity = inputCells.reduce((a, c)=>a.add(c.capacity), Amount.ZERO);
-		const changeCapacity = inputCapacity.sub(neededAmount.sub(new Amount('61', AmountUnit.ckb)));
-
-		// Add the change cell.
-		const changeLockScript = fromAddress.toLockScript();
-		const changeCell = new Cell(changeCapacity, changeLockScript);
-		outputCells.push(changeCell);
-
-    const rawTx = new RawTransaction(inputCells, outputCells, this.cellDeps);
-
-    const tx = new Transaction(rawTx, [this.witnessArgs]);
-    this.fee = Builder.calcFee(tx, this.feeRate);
-
-    return tx;
-  }
-
-  getCollector() {
-    return this.collector;
-  }
 }
