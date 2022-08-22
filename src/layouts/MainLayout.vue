@@ -3,7 +3,7 @@
     <q-header elevated>
       <q-toolbar>
         <q-toolbar-title class="text-center">
-          Layer 1 -> EVM bridge
+          Nervos Layer 1 -> Godwoken mNFT bridge
         </q-toolbar-title>
       </q-toolbar>
     </q-header>

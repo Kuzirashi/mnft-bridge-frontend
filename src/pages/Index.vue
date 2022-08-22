@@ -66,8 +66,16 @@
       <q-separator spaced />
       <!-- transfer -->
       <q-card-section class="q-gutter-sm">
+        <div class="row">
+          <q-input
+            class="full-width"
+            v-model="toAddress"
+            type="text"
+            label="To Ethereum address on Godwoken:"
+          />
+        </div>
         <div class="row" style="word-break: break-all;">
-          <b>TX:</b>
+          <b>Nervos Layer 1 TX:</b>
           <a
             :href="`https://explorer.nervos.org/aggron/transaction/${txHash}`"
             >{{ txHash }}</a
@@ -176,6 +184,7 @@ import {
   UnipassDemoNFTInterface
 } from 'src/compositions/transfer';
 import { NFT } from 'src/compositions/nft';
+import { CONFIG } from 'src/compositions/config';
 
 export enum ActionType {
   Init,
@@ -435,7 +444,6 @@ export default defineComponent({
       console.log('postTransferNFT', {
         nftChecked: this.nftChecked
       });
-      this.toAddress = 'ckt1q3vvtay34wndv9nckl8hah6fzzcltcqwcrx79apwp2a5lkd07fdxxu49tfd4y5gv8nn5hdc6jrwlmajtestrga6akjw';
       if (!this.toAddress) return;
       if (this.nftChecked.length === 0) {
         this.showSelect = true;
@@ -461,12 +469,10 @@ export default defineComponent({
         }
       };
 
-      const TEST_RECEIVING_EVM_ADDRESS = '0xD173313A51f8fc37BcF67569b463abd89d81844f';
-
       const data = await getNFTTransferSignMessage(
-        this.toAddress,
+        CONFIG.LAYER_ONE_BRIDGE_CKB_ADDRESS,
         [unipassExpectedNft],
-        TEST_RECEIVING_EVM_ADDRESS
+        this.toAddress
       );
       if (!data) return;
       const localData = getData();

@@ -2,9 +2,8 @@
   "name": "unipass-demo",
   "version": "0.0.1",
   "description": "A Demo for Integrating Unipass Provider",
-  "productName": "Unipass Demo",
   "author": "zhixian <frank@lay2.dev>",
-  "private": true,
+  "private": false,
   "scripts": {
     "start": "quasar dev",
     "build": "quasar build",
@@ -42,7 +41,6 @@
   "browserslist": [
     "last 10 Chrome versions",
     "last 10 Firefox versions",
-    "last 4 Edge versions",
     "last 7 Safari versions",
     "last 8 Android versions",
     "last 8 ChromeAndroid versions",

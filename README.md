@@ -1,6 +1,8 @@
-# Unipass Demo (unipass-demo)
+# mNFT Godwoken bridge frontend
 
-A Demo for Integrating Unipass Provider
+This repository contains frontend for transferring mNFT from Unipass v2 wallet to the address of the Nervos Layer 1 to Layer 2 Godwoken EVM bridge.
+
+*Note: The bridge code itself can be found [here](https://github.com/Kuzirashi/mnft-godwoken).*
 
 ## Install the dependencies
 ```bash
@@ -9,18 +11,15 @@ yarn
 
 ### Start the app in development mode (hot-code reloading, error reporting, etc.)
 ```bash
-quasar dev
+yarn start
 ```
 
 ### Lint the files
 ```bash
-yarn run lint
+yarn lint
 ```
 
 ### Build the app for production
 ```bash
-quasar build
+yarn build
 ```
-
-### Customize the configuration
-See [Configuring quasar.conf.js](https://v1.quasar.dev/quasar-cli/quasar-conf-js).
