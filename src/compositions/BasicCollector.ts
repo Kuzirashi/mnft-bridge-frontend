@@ -60,9 +60,9 @@ export default class BasicCollector extends Collector {
             const outputData = rawCell.output_data;
 
             if (typeScript === undefined || typeScript === null) {
-                // @ts-ignore
                 const cell = new Cell(
                     amount,
+                    // @ts-ignore
                     lockScript,
                     undefined,
                     outPoint,
@@ -194,9 +194,9 @@ export default class BasicCollector extends Collector {
             const outPoint = OutPoint.fromRPC(rawCell.out_point);
             const outputData = rawCell.output_data;
 
-            // @ts-ignore
             const cell = new Cell(
                 amount,
+                // @ts-ignore
                 lockScript,
                 typeScript,
                 outPoint,
