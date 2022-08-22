@@ -1,8 +1,7 @@
-import PWCore, {
+import {
     Address,
     AddressType,
     Blake2bHasher,
-    getDefaultPrefix,
     HashType,
     Platform,
     Provider,

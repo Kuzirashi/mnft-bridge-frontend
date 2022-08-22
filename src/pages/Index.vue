@@ -175,11 +175,6 @@ import {
   getNFTransferSignCallback,
   UnipassDemoNFTInterface
 } from 'src/compositions/transfer';
-//
-import {
-  getTicketTransferSignMessage,
-  getTicketTransferSignCallback
-} from 'src/compositions/transfer-ticket';
 import { NFT } from 'src/compositions/nft';
 
 export enum ActionType {
