@@ -37,4 +37,4 @@ jobs:
         aws-region: ${{ secrets.AWS_REGION }}
     - name: Deploy
       if: github.ref == 'refs/heads/main'
-      run: aws s3 sync ./dist/spa ${{ secrets.AWS_BUCKET_NAME }}
+      run: aws s3 sync ./dist/spa s3://${{ secrets.AWS_BUCKET_NAME }}
