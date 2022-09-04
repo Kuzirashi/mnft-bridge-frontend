@@ -50,7 +50,7 @@ export class TransferNFTBuilder extends Builder {
                 2
             )}${this.evmAddress.slice(2)}`.toLowerCase();
             const ethereumAddressCell = new Cell(
-                new Amount('200', AmountUnit.ckb),
+                new Amount('110', AmountUnit.ckb),
                 toAddressLock,
                 undefined,
                 undefined,

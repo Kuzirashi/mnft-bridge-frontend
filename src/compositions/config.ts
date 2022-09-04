@@ -12,5 +12,5 @@ export const CONFIG = {
     UNIPASS_V2_CODE_HASH:
         '0x124a60cd799e1fbca664196de46b3f7f0ecb7138133dcaea4893c51df5b02be6',
 
-    LAYER_ONE_BRIDGE_CKB_ADDRESS: 'ckt1q3vvtay34wndv9nckl8hah6fzzcltcqwcrx79apwp2a5lkd07fdxxu49tfd4y5gv8nn5hdc6jrwlmajtestrga6akjw'
+    LAYER_ONE_BRIDGE_CKB_ADDRESS: 'ckt1q3vvtay34wndv9nckl8hah6fzzcltcqwcrx79apwp2a5lkd07fdxxdg9jh57vt96p4e9clx2wpra62vn7h8vv04el9d'
 };
